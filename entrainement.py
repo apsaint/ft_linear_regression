@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    entrainement.py                                    :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: apsaint- <apsaint-@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2020/01/06 12:20:46 by apsaint-          #+#    #+#              #
+#    Updated: 2020/01/06 12:20:46 by apsaint-         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 #!/usr/bin/python3
 
 import csv
@@ -38,6 +50,7 @@ def read_data(file) -> list:
 
 
 def lr_theta0(csv_reader, theta0, theta1) -> float:
+
     dth0 = 0.0
     for row in csv_reader:
         dth0 += (theta0 + (theta1 * float(row['km'])) - float(row['price']))
