@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 import csv
 import os
 import sys
@@ -24,7 +23,7 @@ def estimate_price_calc(kms: list, prices: list, input_kms: int, th0: float, th1
     return price
 
 
-def get_km() -> int:
+def get_user_km() -> int:
     """
     Get the user input for the estimatePrice cal and print the result
     Returns input_kms in int
@@ -50,11 +49,11 @@ if __name__ == "__main__":
     """
     Main function for estimation program
     """
-    thetas_file = get_file_path('thetas.csv')
-    data_file = get_file_path('data.csv')
+    thetas_file = get_file_path('..\\data\\thetas.csv')
+    data_file = get_file_path('..\\data\\data.csv')
 
     t0, t1 = get_thetas_from_csv(thetas_file)
-    input_kms = get_km()
+    input_kms = get_user_km()
     kms, prices = get_data_from_csv(data_file)
     price = estimate_price_calc(kms, prices, input_kms, t0, t1)
     if price < 0:

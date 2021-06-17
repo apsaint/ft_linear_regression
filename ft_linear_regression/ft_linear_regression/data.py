@@ -8,7 +8,8 @@ def get_file_path(file: str) -> str:
     :param file:
     :return: file full path
     """
-    return os.path.join(os.path.dirname(__file__), file)
+    cur_path = os.path.dirname(__file__)
+    return os.path.join(cur_path, file)
 
 
 def get_data_from_csv(csv_file: str) -> (list, list):
@@ -34,6 +35,12 @@ def get_data_from_csv(csv_file: str) -> (list, list):
 
 
 def get_thetas_from_csv(file: str):
+    """
+    Get thetas value from csv file
+
+    :param file: file name
+    :return: a tuple of theta data
+    """
     t0, t1 = 0, 0
     if os.path.isfile(file):
         with open(file, 'r') as csv_file:
@@ -78,8 +85,20 @@ def normalize_data(kms: list, prices: list) -> (list, list):
 
 
 def normalize(data_list: list, elem):
+    """
+    Normalize data
+    :param data_list:
+    :param elem:
+    :return:
+    """
     return (elem - min(data_list)) / (max(data_list) - min(data_list))
 
 
 def denormalize(data_list: list, elem):
+    """
+    Denormalize data
+    :param data_list:
+    :param elem:
+    :return:
+    """
     return (elem * (max(data_list) - min(data_list))) + min(data_list)

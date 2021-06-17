@@ -3,87 +3,9 @@
 import csv
 import os
 
-from ft_linear_regression.ft_linear_regression.data import get_file_path
-
-
-def estimate_price(kms, th0, th1) -> float:
-    """
-    Calcul le prix estimé d'une voiture par r   apport à son kilometrage
-    Parameters
-    ----------
-    kms: kilometrage
-    th0:
-    th1:
-
-    Returns
-    -------
-    ep: Prix estimé
-    """
-    price = float(th0 + (th1 * kms))
-    return price
-
-
-def read_data(file) -> list:
-    """
-    Read and return dict
-    Parameters
-    ----------
-
-    Returns
-    -------
-    csv_reader
-    """
-    list_csv = []
-    with open(file, mode='r') as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        for row in csv_reader:
-            list_csv.append(row)
-    return list_csv
-
-
-def lr_theta0(csv_reader, theta0, theta1) -> float:
-    dth0 = 0.0
-    for row in csv_reader:
-        dth0 += (theta0 + (theta1 * float(row['km'])) - float(row['price']))
-    return float(dth0)
-
-
-def lr_theta1(csv_reader, theta0, theta1) -> float:
-    dth1 = 0.0
-    for row in csv_reader:
-        dth1 += (theta0 + (theta1 * float(row['km'])) - float(row['price'])) * float(row['km'])
-    return float(dth1)
-
-
-def lr_derivee(csv_reader, theta0, theta1) -> (float, float):
-    tmp0 = 0.0
-    tmp1 = 0.0
-    m = len(csv_reader)
-    learning_rate = 0.1
-    d0 = lr_theta0(csv_reader, theta0, theta1)
-    d1 = lr_theta1(csv_reader, theta0, theta1)
-    tmp0 = theta0 - (learning_rate * (d0 / m))
-    tmp1 = theta1 - (learning_rate * (d1 / m))
-    return (tmp0, tmp1)
-
-
-def get_max(csv_reader, key) -> float:
-    max = 0.0
-    for r in csv_reader:
-        if float(r[key]) > max:
-            max = float(r[key])
-    return max
-
-
-def normalise_data(csv_reader) -> list:
-    norm_data = []
-    max_km = get_max(csv_reader, 'km')
-    max_price = get_max(csv_reader, 'price')
-    for row in csv_reader:
-        row['km'] = float(row['km']) / max_km
-        row['price'] = float(row['price']) / max_price
-        norm_data.append(row)
-    return norm_data
+from ft_linear_regression.ft_linear_regression.data import get_file_path, get_data_from_csv, get_thetas_from_csv, \
+    normalize_data, write_theta_data
+from ft_linear_regression.ft_linear_regression.visualiser import display
 
 
 def gradient_descent(kms: list, prices: list):
@@ -104,38 +26,96 @@ def gradient_descent(kms: list, prices: list):
     message = "max epoch reached"
 
     for iteration in range(iterations):
-        dt0 = 0
-        dt1 = 0
-        for mileage, price in zip(kms, prices):
-            dt0 += (t1 * mileage + t0) - price
-            dt1 += ((t1 * mileage + t0) - price) * mileage
+        dt0, dt1 = derivate(kms, prices, t0, t1)
         t0 -= dt0 / len(kms) * learning_rate
         t1 -= dt1 / len(prices) * learning_rate
-        loss = lossFunction(t0, t1, kms, prices)
+        loss = cost(t0, t1, kms, prices)
         if iteration % 10 == 0:
             print("epoch {} - loss: {:.8}".format(iteration, loss))
-        t0, t1, learning_rate = boldDriver(loss, loss_history, t0, t1, dt0, dt1, learning_rate, len(kms))
+        t0, t1, learning_rate = bold_driver(loss, loss_history, t0, t1, dt0, dt1, learning_rate, len(kms))
         loss_history.append(loss)
         t0_history.append(t0)
         t1_history.append(t1)
-        if earlyStopping(loss_history):
+        if early_stopping(loss_history):
             message = "early stopped"
             break
     print("\nend: {}.".format(message))
     print("epoch {} - loss: {:.8}".format(iteration, loss))
-    return (t0, t1, loss_history, t0_history, t1_history)
+    return t0, t1, loss_history, t0_history, t1_history
+
+
+def derivate(kms, prices, t0, t1):
+    dt0 = 0
+    dt1 = 0
+    for mileage, price in zip(kms, prices):
+        dt0 += (t1 * mileage + t0) - price
+        dt1 += ((t1 * mileage + t0) - price) * mileage
+    return dt0, dt1
+
+
+def cost(t0, t1, mileages, prices):
+    """
+    Calculate cost for derivative
+
+    :param t0:
+    :param t1:
+    :param mileages:
+    :param prices:
+    :return:
+    """
+    loss = 0.0
+    for mileage, price in zip(mileages, prices):
+        loss += (price - (t1 * mileage + t0)) ** 2
+    return loss / len(mileages)
+
+
+def bold_driver(loss, loss_history, t0, t1, dt0, dt1, learning_rate, length):
+    """
+    Update model parameters (learning rate)
+    :param loss:
+    :param loss_history:
+    :param t0:
+    :param t1:
+    :param dt0:
+    :param dt1:
+    :param learning_rate:
+    :param length:
+    :return:
+    """
+    newlearning_rate = learning_rate
+    if len(loss_history) > 1:
+        if loss >= loss_history[-1]:
+            t0 += dt0 / length * learning_rate
+            t1 += dt1 / length * learning_rate
+            newlearning_rate *= 0.5
+        else:
+            newlearning_rate *= 1.05
+    return t0, t1, newlearning_rate
+
+
+def early_stopping(loss_history):
+    """
+    Stop the training when the loss start to grow
+    :param loss_history: measure the poorness of the model
+    :return: True if stopping is necessar or False
+    """
+    check = 8
+    if len(loss_history) > check:
+        mean = sum(loss_history[-(check):]) / check
+        last = loss_history[-1]
+        if round(mean, 9) == round(last, 9):
+            return True
+    return False
 
 
 if __name__ == "__main__":
-    data_file = get_file_path('data.csv')
-    csv_reader = read_data(data_file)
-    th = read_data('thetas.csv')
-    for row in th:
-        th0 = float(row['theta0'])
-        th1 = float(row['theta1'])
-    norm_data = normalise_data(csv_reader.copy())
-    theta0, theta1 = lr_derivee(norm_data, th0, th1)
-    theta0 = theta0 * get_max(csv_reader, 'km')
-    theta1 = theta1 * (get_max(csv_reader, 'price') / get_max(csv_reader, 'km'))
-    p = estimate_price_calc(240000, theta0, theta1)
-    print(p)
+    # Data recuperation
+    data_file = get_file_path('..\\data\\data.csv')
+    thetas_file = get_file_path('..\\data\\thetas.csv')
+    kms, prices = get_data_from_csv(data_file)
+
+    x, y = normalize_data(kms, prices)
+    t0, t1, loss_history, t0_history, t1_history = gradient_descent(x, y)
+    write_theta_data(t0, t1, thetas_file)
+    display(t0, t1, kms, prices, loss_history, t0_history, t1_history)
+
