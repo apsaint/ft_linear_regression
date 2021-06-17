@@ -3,9 +3,9 @@
 import csv
 import os
 
-from ft_linear_regression.ft_linear_regression.data import get_file_path, get_data_from_csv, get_thetas_from_csv, \
+from ft_linear_regression.data import get_file_path, get_data_from_csv, get_thetas_from_csv, \
     normalize_data, write_theta_data
-from ft_linear_regression.ft_linear_regression.visualiser import display
+from ft_linear_regression.visualiser import display
 
 
 def gradient_descent(kms: list, prices: list):
@@ -110,8 +110,8 @@ def early_stopping(loss_history):
 
 if __name__ == "__main__":
     # Data recuperation
-    data_file = get_file_path('..\\data\\data.csv')
-    thetas_file = get_file_path('..\\data\\thetas.csv')
+    data_file = get_file_path('.\\data\\data.csv')
+    thetas_file = get_file_path('.\\data\\thetas.csv')
     kms, prices = get_data_from_csv(data_file)
 
     x, y = normalize_data(kms, prices)

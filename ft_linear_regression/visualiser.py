@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from ft_linear_regression.ft_linear_regression.data import denormalize, normalize
+from ft_linear_regression.data import denormalize, normalize
 
 
 def visual_linear_regression(kms, prices, t0, t1):

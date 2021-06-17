@@ -1,9 +1,7 @@
 #!/usr/bin/python3
-import csv
-import os
 import sys
 
-from ft_linear_regression.ft_linear_regression.data import normalize, denormalize, get_file_path, get_data_from_csv, \
+from ft_linear_regression.data import normalize, denormalize, get_file_path, get_data_from_csv, \
     get_thetas_from_csv
 
 
@@ -49,8 +47,8 @@ if __name__ == "__main__":
     """
     Main function for estimation program
     """
-    thetas_file = get_file_path('..\\data\\thetas.csv')
-    data_file = get_file_path('..\\data\\data.csv')
+    thetas_file = get_file_path('.\\data\\thetas.csv')
+    data_file = get_file_path('.\\data\\data.csv')
 
     t0, t1 = get_thetas_from_csv(thetas_file)
     input_kms = get_user_km()
