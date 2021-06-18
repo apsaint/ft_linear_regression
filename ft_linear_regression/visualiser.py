@@ -23,7 +23,7 @@ def visual_linear_regression(kms, prices, t0, t1):
 
 def visual_cost(loss_history):
     """
-
+    Visual representation of the cost/loss of the regression
     :param loss_history:
     """
     f2 = plt.figure(2)
@@ -35,8 +35,9 @@ def visual_cost(loss_history):
 
 def visual_thetas(t0_history, t1_history):
     """
-
-    :param loss_history:
+    Reprensentation of thetas evolution
+    :param t0_history:
+    :param t1_history:
     """
     # t0 history visual
     f3 = plt.figure(3)

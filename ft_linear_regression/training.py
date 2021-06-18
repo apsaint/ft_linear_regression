@@ -45,6 +45,14 @@ def gradient_descent(kms: list, prices: list):
 
 
 def derivate(kms, prices, t0, t1):
+    """
+
+    :param kms:
+    :param prices:
+    :param t0:
+    :param t1:
+    :return:
+    """
     dt0 = 0
     dt1 = 0
     for mileage, price in zip(kms, prices):
@@ -93,11 +101,11 @@ def bold_driver(loss, loss_history, t0, t1, dt0, dt1, learning_rate, length):
     return t0, t1, newlearning_rate
 
 
-def early_stopping(loss_history):
+def early_stopping(loss_history) -> bool:
     """
     Stop the training when the loss start to grow
     :param loss_history: measure the poorness of the model
-    :return: True if stopping is necessar or False
+    :return: True if stopping is necessary or False
     """
     check = 8
     if len(loss_history) > check:

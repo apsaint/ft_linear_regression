@@ -20,11 +20,12 @@ def get_data_from_csv(csv_file: str) -> (list, list):
     """
     kms = []
     prices = []
-    with open(csv_file, 'r') as csvfile:
-        csv_reader = csv.reader(csvfile, delimiter=',')
-        for row in csv_reader:
-            kms.append(row[0])
-            prices.append(row[1])
+    if os.path.isfile(csv_file):
+        with open(csv_file, 'r') as csvfile:
+            csv_reader = csv.reader(csvfile, delimiter=',')
+            for row in csv_reader:
+                kms.append(row[0])
+                prices.append(row[1])
 
     kms.pop(0)
     prices.pop(0)

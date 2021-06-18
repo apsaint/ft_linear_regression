@@ -1,5 +1,5 @@
-from data import get_file_path, get_data_from_csv, get_thetas_from_csv
-from ft_linear_regression.ft_linear_regression.estimate import estimate_price_calc
+from ft_linear_regression.data import get_file_path, get_data_from_csv, get_thetas_from_csv
+from ft_linear_regression.estimate import estimate_price_calc
 
 
 def calc_sum_of_squares_regression(prices: list, kms: list, t0: float, t1: float) -> float:
