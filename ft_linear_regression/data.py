@@ -12,6 +12,21 @@ def get_file_path(file: str) -> str:
     return os.path.join(cur_path, file)
 
 
+def clean_and_eval_data(kms: list, prices: list) -> (list, list):
+    """
+
+    :param kms:
+    :param prices:
+    :return:
+    """
+    kms.pop(0)
+    prices.pop(0)
+    for i in range(len(kms)):
+        kms[i] = eval(kms[i])
+        prices[i] = eval(prices[i])
+    return kms, prices
+
+
 def get_data_from_csv(csv_file: str) -> (list, list):
     """
     Get data from data.csv file
@@ -26,13 +41,7 @@ def get_data_from_csv(csv_file: str) -> (list, list):
             for row in csv_reader:
                 kms.append(row[0])
                 prices.append(row[1])
-
-    kms.pop(0)
-    prices.pop(0)
-    for i in range(len(kms)):
-        kms[i] = eval(kms[i])
-        prices[i] = eval(prices[i])
-    return kms, prices
+    return clean_and_eval_data(kms, prices)
 
 
 def get_thetas_from_csv(file: str):

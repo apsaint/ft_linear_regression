@@ -1,9 +1,8 @@
-
 from unittest import TestCase
 from unittest.mock import patch, mock_open
 
 from ft_linear_regression.data import get_file_path, get_data_from_csv, \
-    get_thetas_from_csv, write_theta_data
+    get_thetas_from_csv, write_theta_data, clean_and_eval_data
 
 
 class TestData(TestCase):
@@ -28,8 +27,23 @@ class TestData(TestCase):
         mock_join.assert_called_once_with(cur_path, file)
         self.assertEqual('cur_path/my_file', file_path)
 
+    def test_clean_and_eval_data(self):
+        """
+
+        :return:
+        """
+        kms = ['km', '12345', '123456']
+        prices = ['prices', '1234', '12345']
+
+        kms, prices = clean_and_eval_data(kms, prices)
+
+        self.assertEqual([12345, 123456], kms)
+        self.assertEqual([1234, 12345], prices)
+
+    @patch('ft_linear_regression.data.clean_and_eval_data',
+           return_value=([12345, 123456], [1234, 12345]))
     @patch('os.path.isfile', return_value=True)
-    def test_get_data_from_csv(self, mock_isfile):
+    def test_get_data_from_csv(self, mock_isfile, mock_eval_data):
         """
         Test that the method retrieve data from csv
         :param mock_open:
@@ -42,9 +56,11 @@ class TestData(TestCase):
 
                 mock_isfile.assert_called_once_with(csv_file)
 
+                mock_eval_data.assert_called_once()
+
                 mock_csv.assert_called_once_with(csv_file, 'r')
 
-                mock_csv_reader.assert_called_once_with(mock_csv.return_value, delimiter=',')
+                mock_csv_reader.assert_called_once()
 
     @patch('os.path.isfile', return_value=True)
     def test_get_thetas_from_csv(self, mock_isfile):

@@ -1,9 +1,6 @@
 #!/usr/bin/python3
 
-import csv
-import os
-
-from ft_linear_regression.data import get_file_path, get_data_from_csv, get_thetas_from_csv, \
+from ft_linear_regression.data import get_file_path, get_data_from_csv, \
     normalize_data, write_theta_data
 from ft_linear_regression.visualiser import display
 
@@ -11,8 +8,8 @@ from ft_linear_regression.visualiser import display
 def gradient_descent(kms: list, prices: list):
     """
     Gradient descent with learning rate
-    :param kms:
-    :param prices:
+    :param kms: list of kms from data
+    :param prices: list of prices from data
     :return:
     """
     learning_rate = 0.5
@@ -23,7 +20,7 @@ def gradient_descent(kms: list, prices: list):
     t1_history = [0.0]
     t0 = 0.0
     t1 = 0.0
-    message = "max epoch reached"
+    message = "Epoch max reached"
 
     for iteration in range(iterations):
         dt0, dt1 = derivate(kms, prices, t0, t1)
@@ -31,7 +28,7 @@ def gradient_descent(kms: list, prices: list):
         t1 -= dt1 / len(prices) * learning_rate
         loss = cost(t0, t1, kms, prices)
         if iteration % 10 == 0:
-            print("epoch {} - loss: {:.8}".format(iteration, loss))
+            print("Epoch {} - loss: {:.8}".format(iteration, loss))
         t0, t1, learning_rate = bold_driver(loss, loss_history, t0, t1, dt0, dt1, learning_rate, len(kms))
         loss_history.append(loss)
         t0_history.append(t0)
@@ -39,16 +36,16 @@ def gradient_descent(kms: list, prices: list):
         if early_stopping(loss_history):
             message = "early stopped"
             break
-    print("\nend: {}.".format(message))
-    print("epoch {} - loss: {:.8}".format(iteration, loss))
+    print("\nEnd: {}.".format(message))
+    print("Epoch {} - loss: {:.8}".format(iteration, loss))
     return t0, t1, loss_history, t0_history, t1_history
 
 
-def derivate(kms, prices, t0, t1):
+def derivate(kms: list, prices: list, t0: float, t1: float) -> (float, float):
     """
-
-    :param kms:
-    :param prices:
+    Calculate
+    :param kms: list of kms from data
+    :param prices: list of prices from data
     :param t0:
     :param t1:
     :return:
@@ -61,20 +58,19 @@ def derivate(kms, prices, t0, t1):
     return dt0, dt1
 
 
-def cost(t0, t1, mileages, prices):
+def cost(t0: float, t1: float, kms: list, prices: list):
     """
     Calculate cost for derivative
-
     :param t0:
     :param t1:
-    :param mileages:
+    :param kms:
     :param prices:
     :return:
     """
     loss = 0.0
-    for mileage, price in zip(mileages, prices):
-        loss += (price - (t1 * mileage + t0)) ** 2
-    return loss / len(mileages)
+    for km, price in zip(kms, prices):
+        loss += (price - (t1 * km + t0)) ** 2
+    return loss / len(kms)
 
 
 def bold_driver(loss, loss_history, t0, t1, dt0, dt1, learning_rate, length):
